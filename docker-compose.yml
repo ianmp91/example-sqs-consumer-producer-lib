@@ -1,0 +1,18 @@
+services:
+  # --- INFRAESTRUCTURA (A) ---
+  elasticmq:
+    image: softwaremill/elasticmq-native
+    container_name: elasticmq-sqs
+    ports:
+      - "9324:9324" # API SQS
+      - "9325:9325" # UI Web
+    command: >
+      # Comando que configura las colas en ElasticMQ
+      -Dconfig.file=/conf/custom.conf
+    volumes:
+      - ./elasticmq/custom.conf:/conf/custom.conf
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge

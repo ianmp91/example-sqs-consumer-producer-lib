@@ -1,0 +1,34 @@
+services:
+  # --- MICROSERVICIO B (Productor/Consumidor) ---
+  micro-producer-b:
+    container_name: micro-b
+    build:
+      context: ../sqs-producer-consumer-micro
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_AWS_SQS_ENDPOINT=http://elasticmq:9324
+      - SERVER_PORT=8080
+    ports:
+      - "8080:8080" # Puerto Host 8080 -> Container 8080
+    networks:
+      - app-network
+
+  # --- MICROSERVICIO C (Consumidor/Productor) ---
+  micro-consumer-c:
+    container_name: micro-c
+    build:
+      context: ../sqs-consumer-producer-micro
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_AWS_SQS_ENDPOINT=http://elasticmq:9324
+      - SERVER_PORT=8080
+    ports:
+      - "8081:8080" # IMPORTANTE: Puerto Host 8081 -> Container 8080
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

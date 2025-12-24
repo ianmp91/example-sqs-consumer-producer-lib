@@ -1,0 +1,23 @@
+<jxb:bindings version="3.0"
+    xmlns:jxb="https://jakarta.ee/xml/ns/jaxb"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+            jxb:extensionBindingPrefixes="xjc">
+
+    <jxb:globalBindings>
+        <xjc:simple />
+
+        <xjc:serializable uid="1" />
+
+        <jxb:javaType name="java.time.LocalDateTime" xmlType="xs:dateTime"
+            parseMethod="java.time.LocalDateTime.parse"
+            printMethod="java.lang.String.valueOf" />
+    </jxb:globalBindings>
+
+    <jxb:bindings scd="x-schema::tns" xmlns:tns="http://www.iata.org/IATA/2007/00">
+        <jxb:schemaBindings>
+            <jxb:package name="com.example.sqslib.iata"/>
+        </jxb:schemaBindings>
+    </jxb:bindings>
+
+</jxb:bindings>

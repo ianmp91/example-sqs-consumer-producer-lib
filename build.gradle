@@ -1,0 +1,97 @@
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot' version '4.0.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+    id 'maven-publish'
+    id 'com.github.bjornvester.xjc' version '1.9.0'
+}
+
+group = 'com.example.sqslib'
+version = '0.1.1-SNAPSHOT'
+description = 'Example project for sqs - consumer & producer lib'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    // ESTA ES LA SOLUCIÓN:
+    // Habilita la creación automática de la tarea 'sourcesJar'
+    withSourcesJar()
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true;
+}
+
+
+repositories {
+    mavenLocal()
+	mavenCentral()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+ext {
+    springCloudVersion = "4.0.0-M1"
+    springBootVersion = "4.0.0"
+    lombokVersion = "1.18.42"
+    jakartaXmlVersion = "4.0.4"
+    jaxbVersion = "4.0.6"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+
+    // Lombok (opcional, pero ayuda con getters/setters/constructores)
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    // AWS Spring Cloud Starter SQS (permit ElasticMQ for local)
+    api("io.awspring.cloud:spring-cloud-aws-starter:${springCloudVersion}")
+    api("io.awspring.cloud:spring-cloud-aws-starter-sqs:${springCloudVersion}")
+
+    // XML JAKARTA & JAXB
+    api("jakarta.xml.bind:jakarta.xml.bind-api:${jakartaXmlVersion}")
+    api("org.glassfish.jaxb:jaxb-runtime:${jaxbVersion}")
+
+    // Spring Boot Starter
+	implementation("org.springframework.boot:spring-boot-starter:${springBootVersion}")
+
+    // Test
+	testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    testImplementation("io.awspring.cloud:spring-cloud-aws-starter-sqs:${springCloudVersion}")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.named('bootJar') {
+    enabled = false
+}
+
+tasks.named('jar') {
+    enabled = true
+}
+
+
+xjc {
+    xsdDir = file("src/main/resources/xsd")
+    xjcVersion = '4.0.5'
+}
+
+tasks.named('sourcesJar') {
+    dependsOn 'xjc'
+    // Estrategia por si hay archivos duplicados (seguridad)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
